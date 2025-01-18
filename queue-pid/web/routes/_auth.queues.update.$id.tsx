@@ -1,11 +1,10 @@
-import { BlockStack, Button, Card, InlineGrid, InlineStack, Layout, Page, Text } from "@shopify/polaris";
+import { BlockStack, Button, Card, InlineStack, Layout, Page, Text } from "@shopify/polaris";
 import { useLoaderData, useNavigate } from "@remix-run/react";
 import {
   AutoForm,
   AutoInput,
   AutoStringInput,
   AutoSubmit,
-  AutoTable,
   SubmitResultBanner,
 } from "@gadgetinc/react/auto/polaris";
 import { AutoSaveBar } from "../components/AutoSaveBar";
@@ -61,22 +60,9 @@ export default function() {
                   </BlockStack>
                 </BlockStack>
               </Card>
-              <Card>
-                <BlockStack gap="200">
-                  <InlineGrid columns="1fr auto">
-                    <Text as="h2" variant="headingSm">
-                      Queue memberships
-                    </Text>
-                    <Button url={`/queues/${queue.id}/queue-memberships/new`}>Create Queue membership</Button>
-                  </InlineGrid>
-                  <AutoTable
-                    model={api.queueMembership}
-                    columns={["updatedAt", "createdAt"]}
-                    onClick={(row, rowRecord) => navigate(`/queue-memberships/update/${rowRecord.id}`)}
-                    filter={[{ queueId: { equals: queue.id } }]}
-                  />
-                </BlockStack>
-              </Card>
+              <Button
+                url={`/queues/${queue.id}/add`}
+                variant="primary">Add Users</Button>
             </BlockStack>
           </Layout.Section>
           <Layout.Section variant="oneThird">

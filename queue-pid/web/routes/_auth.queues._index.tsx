@@ -2,6 +2,7 @@ import { BlockStack, Button, Card, Layout, Page } from "@shopify/polaris";
 import { useNavigate } from "@remix-run/react";
 import { AutoTable } from "@gadgetinc/react/auto/polaris";
 import { api } from "../api";
+import gizmoImage from "../../assets/gizmo.png";
 
 export default function() {
   const navigate = useNavigate();
@@ -63,6 +64,7 @@ export default function() {
                 ]}
 
               />
+             
             </BlockStack>
           </Card>
         </Layout.Section>

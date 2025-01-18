@@ -1,55 +1,88 @@
-import { 
-  BlockStack, 
-  Page, 
-  Card, 
-  Text, 
+import {
+  BlockStack,
+  Page,
+  Card,
+  Text,
   Banner,
   FormLayout,
   TextField,
   Button
 } from "@shopify/polaris";
 import { useNavigate, useParams } from "@remix-run/react";
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useAction } from "@gadgetinc/react";
+import Webcam from "react-webcam";
 import { api } from "../api";
 
 export default function QueueSignUp() {
   const { queueId } = useParams();
   const navigate = useNavigate();
   const [error, setError] = useState<string>();
-  
+
   // Form state
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
+  const [userImage, setUserImage] = useState("");
 
   // Action for creating queue membership
   const [{ fetching: joiningQueue }, joinQueue] = useAction(api.queueMembership.create);
 
+  const WebcamCapture = () => {
+    const webcamRef = useRef<Webcam>(null);
+
+    const capture = useCallback(() => {
+      const imageSrc = webcamRef.current?.getScreenshot();
+      if (imageSrc) {
+        setUserImage(imageSrc);
+      }
+    }, [webcamRef]);
+
+    return (
+      <BlockStack gap="200">
+        {!userImage && (
+          <> 
+            <Webcam
+              ref={webcamRef}
+              screenshotFormat="image/jpeg"
+              style={{ width: '100%', borderRadius: '8px' }}
+            />
+            <Button onClick={capture}>Take photo</Button>
+          </>
+        )}
+        {userImage && (
+          <> 
+            <img
+              src={userImage}
+              alt="captured"
+              style={{ width: '100%', borderRadius: '8px' }}
+            />
+            <Button onClick={() => setUserImage("")}>Retake</Button>
+          </>
+        )}
+      </BlockStack>
+    );
+  };
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setError(undefined);
-    
+
     try {
-      // Create queue membership directly with user details
-      const joinQueueResult = await joinQueue({
-        queueMembership: {
-          queue: { _link: queueId },
-          firstName,
-          lastName,
-          email
-        }
+      const result = await joinQueue({
+        queue: { _link: queueId },
+        firstName,
+        lastName,
+        email,
+        userImage
       });
 
-      if (joinQueueResult.error) {
-        throw joinQueueResult.error;
+      if (!result.data) {
+        throw new Error("Failed to create queue membership");
       }
 
-      // Navigate to the join page
-      if (joinQueueResult.data?.id) {
-        navigate(`/queues/${queueId}/join/${joinQueueResult.data.id}`);
-      } else {
-        throw new Error("Failed to join queue");
+      if (result.data.id) {
+        navigate(`/queues/${queueId}/join/${result.data.id}`);
       }
     } catch (error: any) {
       setError(error.message || "Failed to join queue. Please try again.");
@@ -94,8 +127,9 @@ export default function QueueSignUp() {
                   autoComplete="email"
                   required
                 />
-                <Button 
-                  submit 
+                <WebcamCapture />
+                <Button
+                  submit
                   variant="primary"
                   loading={joiningQueue}
                 >

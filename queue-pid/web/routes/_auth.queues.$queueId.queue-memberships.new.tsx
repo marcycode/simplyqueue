@@ -8,16 +8,19 @@ import {
   Spinner,
   Text,
 } from "@shopify/polaris";
+import { useState, useRef, useCallback } from "react";
 import { useParams } from "@remix-run/react";
 import { useFindOne, useFindMany, useAction } from "@gadgetinc/react";
 import { api } from "../api";
 import solace from "solclientjs";
 import { useEffect } from "react";
+import Webcam from "react-webcam";
 import { l } from "vite/dist/node/types.d-aGj9QkWt";
 
 export default function() {
   const params = useParams();
   const queueId = params.queueId!;
+  const [authImage, setAuthImage] = useState("");
 
   // Fetch queue details
   const [{ data: queue, fetching: fetchingQueue, error: queueError }] =
@@ -33,19 +36,12 @@ export default function() {
   ] = useFindMany(api.queueMembership, {
     filter: { queueId: { equals: queueId } },
     sort: { createdAt: "Ascending" },
-    first: 1,
-    select: {
-      id: true,
-      createdAt: true,
-      user: {
-        firstName: true,
-        lastName: true,
-        email: true,
-      },
-    },
+    first: 1
   });
 
   const oldestMember = memberships?.[0];
+
+  console.log("oldestMember", oldestMember);
 
   // Set up delete action for admitting
   const [{ fetching: admitting }, admit] = useAction(
@@ -53,15 +49,14 @@ export default function() {
   );
 
   // Solace stuff should probably go in its own thing... TODO
-  var factoryProps = new solace.SolclientFactoryProperties();
+  const factoryProps = new solace.SolclientFactoryProperties();
   factoryProps.profile = solace.SolclientFactoryProfiles.version10;
   solace.SolclientFactory.init(factoryProps);
-  var session = solace.SolclientFactory.createSession({
-    url: "wss://mr-connection-3j8278prrj0.messaging.solace.cloud:443",
-    vpnName: "queue-pid-broker",
-    userName: "solace-cloud-client",
-    // ENV VAR 😬
-    password: "k6nf8vl7msf3b5uha6uoi01sfq",
+  const session = solace.SolclientFactory.createSession({
+    url: process.env.SOLACE_URL,
+    vpnName: process.env.SOLACE_VPN,
+    userName: process.env.SOLACE_USER_NAME,
+    password: process.env.SOLACE_PASSWORD,
   });
   try {
     console.log("Test");
@@ -86,7 +81,7 @@ export default function() {
     const msgText = "Test";
     const msg = solace.SolclientFactory.createMessage();
     msg.setDestination(
-      solace.SolclientFactory.createTopicDestination(`/ready/${oldestMember?.userId}`)
+      solace.SolclientFactory.createTopicDestination(`ready/${oldestMember?.id}`)
     );
     msg.setBinaryAttachment(msgText);
     msg.setDeliveryMode(solace.MessageDeliveryModeType.DIRECT);
@@ -104,6 +99,42 @@ export default function() {
   const handleAdmit = (id: string) => {
     admit({ id: id });
     publish();
+  };
+
+  const WebcamCapture = () => {
+    const webcamRef = useRef<Webcam>(null);
+
+    const capture = useCallback(() => {
+      const imageSrc = webcamRef.current?.getScreenshot();
+      if (imageSrc) {
+        setAuthImage(imageSrc);
+      }
+    }, [webcamRef]);
+
+    return (
+      <BlockStack gap="200">
+        {!authImage && (
+          <>
+            <Webcam
+              ref={webcamRef}
+              screenshotFormat="image/jpeg"
+              style={{ width: '100%', borderRadius: '8px' }}
+            />
+            <Button onClick={capture}>Take photo</Button>
+          </>
+        )}
+        {authImage && (
+          <>
+            <img
+              src={authImage}
+              alt="captured"
+              style={{ width: '100%', borderRadius: '8px' }}
+            />
+            <Button onClick={() => setAuthImage("")}>Retake</Button>
+          </>
+        )}
+      </BlockStack>
+    );
   };
 
   // Handle loading states
@@ -165,11 +196,16 @@ export default function() {
               {oldestMember && (
                 <BlockStack gap="200">
                   <Text as="p">
-                    {oldestMember.user?.firstName} {oldestMember.user?.lastName}
+                    {oldestMember?.firstName} {oldestMember?.lastName}
                   </Text>
                   <Text as="p" color="subdued">
-                    {oldestMember.user?.email}
+                    {oldestMember?.email}
                   </Text>
+                  {oldestMember.userImage && <img
+                    src={oldestMember.userImage}
+                    alt="captured"
+                    style={{ width: '100%', borderRadius: '8px' }}
+                  />}
                   <Button
                     onClick={() => handleAdmit(oldestMember.id)}
                     loading={admitting}

@@ -13,7 +13,6 @@ import { useSignOut } from "@gadgetinc/react";
 import { ToastManager } from "../components/ToastManager";
 import type { RootOutletContext } from "../root";
 
-
 export const loader = async ({ context }: LoaderFunctionArgs) => {
   const { session, gadgetConfig } = context;
 
@@ -68,18 +67,19 @@ export default function() {
   const rootOutletContext = useOutletContext<RootOutletContext>();
 
   return (
-    <Frame
-      logo={{
-        topBarSource: "/api/assets/autologo?background=dark",
-        contextualSaveBarSource: "/api/assets/autologo?background=light",
-        url: "/",
-        accessibilityLabel: "Lead Palooza",
-        width: 150,
-      }}
-      topBar={<TopBar userMenu={<UserMenu />} />}
-    >
-      <Outlet context={{ ...rootOutletContext, user } as AuthOutletContext} />
-      <ToastManager />
-    </Frame>
+   <Frame
+  topBar={
+    <>
+      <div className="navbar-logo">SimplyQ</div>
+      <TopBar userMenu={<UserMenu />} />
+    </>
+  }
+>
+  <Outlet context={{ ...rootOutletContext, user } as AuthOutletContext} />
+  <ToastManager />
+</Frame>
+
+
+
   );
 }

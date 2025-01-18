@@ -68,25 +68,6 @@ export default function () {
               <Card>
                 <BlockStack gap="200">
                   <Text as="h2" variant="headingSm">
-                    Queue histories
-                  </Text>
-                  <AutoHasManyForm
-                    field="queueHistories"
-                    selectPaths={["event"]}
-                    primaryLabel={["event"]}
-                  >
-                    <BlockStack gap="200">
-                      <Text as="h2" variant="headingSm">
-                        Queue History Details
-                      </Text>
-                      <AutoInput field="event" />
-                    </BlockStack>
-                  </AutoHasManyForm>
-                </BlockStack>
-              </Card>
-              <Card>
-                <BlockStack gap="200">
-                  <Text as="h2" variant="headingSm">
                     Queue memberships
                   </Text>
                   <AutoHasManyForm

@@ -8,6 +8,7 @@ import {
   Box,
   Tag,
   Banner,
+  Divider,
 } from "@shopify/polaris";
 import { AutoForm, SubmitResultBanner } from "@gadgetinc/react/auto/polaris";
 import { api } from "../api";
@@ -18,7 +19,7 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
   const { queueId, membershipId } = params;
 
   try {
- 
+
     const [queue, membership] = await Promise.all([
       context.api.queue.findOne(queueId!, {
         select: { name: true, description: true },
@@ -28,7 +29,7 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
       }),
     ]);
 
- 
+
     return json({ queue, membership, membershipId });
   } catch (error) {
     throw new Response('Queue or membership not found', { status: 404 });
@@ -46,11 +47,11 @@ export default function JoinQueueRoute() {
     factoryProps.profile = solace.SolclientFactoryProfiles.version10;
     solace.SolclientFactory.init(factoryProps);
     var session = solace.SolclientFactory.createSession({
-      url: "wss://mr-connection-3j8278prrj0.messaging.solace.cloud:443",
-      vpnName: "queue-pid-broker",
-      userName: "solace-cloud-client",
+      url: process.env.SOLACE_URL,
+      vpnName: process.env.SOLACE_VPN,
+      userName: process.env.SOLACE_USER_NAME,
       // ENV VAR 😬
-      password: "k6nf8vl7msf3b5uha6uoi01sfq",
+      password: process.env.SOLACE_PASSWORD,
     });
     try {
       console.log("Test");
@@ -78,7 +79,7 @@ export default function JoinQueueRoute() {
       const subscribe = () => {
         try {
           session.subscribe(
-            solace.SolclientFactory.createTopicDestination(`/ready/${userId}`),
+            solace.SolclientFactory.createTopicDestination("ready/" + membershipId),
             true,
             "ready",
             10000
@@ -112,12 +113,20 @@ export default function JoinQueueRoute() {
                 <Text variant="bodyMd" as="p">
                   You've successfully joined "{queue.name}"
                 </Text>
+                {recievedMsg ? (
+                  <>
+                    <Divider />
+                    <Text variant="bodyMd" as="p">Make your way to C309 and eat up, bubby!</Text>
+                  </>
+                ) : ""}
               </BlockStack>
               <div style={{ position: "absolute", bottom: "0", right: "0" }}>
                 {recievedMsg ? (
                   <Tag size="large">Ready 🔥</Tag>
                 ) : (
-                  <Tag size="large">Waiting 😔</Tag>
+                  <div>
+                    <Tag size="large">Waiting 😔</Tag>
+                  </div>
                 )}
               </div>
             </div>

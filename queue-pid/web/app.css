@@ -103,3 +103,20 @@ body, .Polaris-Frame__Main {
   border-top-right-radius: var(--p-border-radius-300);
   background-color: var(--p-color-bg);
 }
+
+.navbar-logo {
+  position: absolute; /* Position the text absolutely */
+  top: 20; /* Adjust as needed */
+  margin-top: 0.5em;
+  left: 50%; /* Center horizontally */
+  transform: translateX(-50%); /* Center-align correction */
+  z-index: 10; /* Ensure it appears above other elements */
+  font-family: "Inter", sans-serif; /* Use the Inter font */
+  font-size: 24px; /* Adjust text size */
+  font-weight: 800; /* Make it bold */
+  color: white; /* Set text color to white */
+  padding: 8px 16px; /* Optional padding */
+  pointer-events: none; /* Ensure it doesn’t block interactions */
+}
+
+

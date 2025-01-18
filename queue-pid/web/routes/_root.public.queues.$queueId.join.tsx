@@ -79,11 +79,12 @@ export default function JoinQueueRoute() {
               </>
             ) : (
               <AutoForm
-                fields={["firstName", "lastName", "email"]}
+                fields={["firstName", "lastName", "email", "userImage"]}
                 validates={{
                   firstName: { required: true },
                   lastName: { required: true },
                   email: { required: true, email: true },
+                  userImage: { required: false },
                 }}
                 onSubmit={handleJoinQueue}
                 submitActionText="Join Queue"
