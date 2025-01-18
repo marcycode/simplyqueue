@@ -9,7 +9,7 @@ export const schema: GadgetModel = {
   fields: {
     email: {
       type: "email",
-      validations: { required: true, unique: true },
+      validations: { unique: true },
       storageKey: "4dT1ndN5usI3",
     },
     emailVerificationToken: {
@@ -45,6 +45,7 @@ export const schema: GadgetModel = {
       validations: { strongPassword: true },
       storageKey: "zQ0hgu6Epqgt",
     },
+    phone: { type: "string", storageKey: "IcoojrVv77Op-phone" },
     profilePicture: {
       type: "file",
       allowPublicAccess: true,

@@ -23,6 +23,7 @@ export default function () {
             <BlockStack gap="200">
               <AutoTable
                 model={api.queue}
+                initialSort={{ createdAt: "Descending" }}
                 columns={["name", "status", "description", "updatedAt"]}
                 onClick={(row, rowRecord) => navigate(`/queues/update/${rowRecord.id}`)}
               />

@@ -20,7 +20,7 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
   return json({ queue });
 };
 
-export default function () {
+export default function() {
   const navigate = useNavigate();
 
   const { queue } = useLoaderData<typeof loader>();
@@ -87,7 +87,7 @@ export default function () {
                   </InlineGrid>
                   <AutoTable
                     model={api.queueMembership}
-                    columns={["position", "status", "updatedAt"]}
+                    columns={["updatedAt", "createdAt"]}
                     onClick={(row, rowRecord) => navigate(`/queue-memberships/update/${rowRecord.id}`)}
                     filter={[{ queueId: { equals: queue.id } }]}
                   />
