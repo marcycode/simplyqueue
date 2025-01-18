@@ -40,14 +40,6 @@ export const permissions: GadgetPermissions = {
             update: true,
           },
         },
-        queueHistory: {
-          read: true,
-          actions: {
-            create: true,
-            delete: true,
-            update: true,
-          },
-        },
         queueMembership: {
           read: true,
           actions: {
@@ -72,6 +64,14 @@ export const permissions: GadgetPermissions = {
     unauthenticated: {
       storageKey: "unauthenticated",
       models: {
+        queue: {
+          read: true,
+        },
+        queueMembership: {
+          actions: {
+            create: true,
+          },
+        },
         user: {
           actions: {
             resetPassword: true,

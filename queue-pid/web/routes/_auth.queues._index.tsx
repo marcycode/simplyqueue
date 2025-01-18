@@ -1,9 +1,9 @@
-import { BlockStack, Card, Layout, Page } from "@shopify/polaris";
+import { BlockStack, Button, Card, Layout, Page } from "@shopify/polaris";
 import { useNavigate } from "@remix-run/react";
 import { AutoTable } from "@gadgetinc/react/auto/polaris";
 import { api } from "../api";
 
-export default function () {
+export default function() {
   const navigate = useNavigate();
 
   return (
@@ -23,8 +23,45 @@ export default function () {
             <BlockStack gap="200">
               <AutoTable
                 model={api.queue}
-                columns={["name", "status", "description", "updatedAt"]}
-                onClick={(row, rowRecord) => navigate(`/queues/update/${rowRecord.id}`)}
+                initialSort={{ createdAt: "Descending" }}
+                columns={[
+                  "name",
+                  "status",
+                  "description",
+                  "updatedAt",
+                  {
+                    header: "",
+                    render: ({ record }) => (
+                      <Button
+                        variant="plain"
+                        onClick={() => navigate(`/queues/${record.id}/add`)}>
+                        Add Users
+                      </Button>
+                    ),
+                  },
+                  {
+                    header: "",
+                    render: ({ record }) => (
+                      <Button
+                        variant="primary"
+                        disabled={record.status === "closed"}
+                        onClick={() => navigate(`/queues/${record.id}/queue-memberships/new` /* CHANGE URL TO ADMIT PAGE */)}>
+                        Admit Users
+                      </Button>
+                    ),
+                  },
+                  {
+                    header: "",
+                    render: ({ record }) => (
+                      <Button
+                        variant="primary"
+                        onClick={() => navigate(`/queues/update/${record.id}/`)}>
+                        Edit Queue
+                      </Button>
+                    ),
+                  },
+                ]}
+
               />
             </BlockStack>
           </Card>

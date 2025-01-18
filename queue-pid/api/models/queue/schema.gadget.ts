@@ -22,11 +22,6 @@ export const schema: GadgetModel = {
       validations: { required: true },
       storageKey: "bngpdb6J5Ncd-name",
     },
-    queueHistories: {
-      type: "hasMany",
-      children: { model: "queueHistory", belongsToField: "queue" },
-      storageKey: "r7dAqREJESWI",
-    },
     queueMemberships: {
       type: "hasMany",
       children: { model: "queueMembership", belongsToField: "queue" },

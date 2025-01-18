@@ -2,7 +2,6 @@ import { BlockStack, Button, Card, InlineGrid, InlineStack, Layout, Page, Text }
 import { useLoaderData, useNavigate } from "@remix-run/react";
 import {
   AutoForm,
-  AutoHasManyForm,
   AutoInput,
   AutoStringInput,
   AutoSubmit,
@@ -20,7 +19,7 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
   return json({ queue });
 };
 
-export default function () {
+export default function() {
   const navigate = useNavigate();
 
   const { queue } = useLoaderData<typeof loader>();
@@ -64,21 +63,6 @@ export default function () {
               </Card>
               <Card>
                 <BlockStack gap="200">
-                  <Text as="h2" variant="headingSm">
-                    Queue histories
-                  </Text>
-                  <AutoHasManyForm field="queueHistories" selectPaths={["event"]} primaryLabel={["event"]}>
-                    <BlockStack gap="200">
-                      <Text as="h2" variant="headingSm">
-                        Queue History Details
-                      </Text>
-                      <AutoInput field="event" />
-                    </BlockStack>
-                  </AutoHasManyForm>
-                </BlockStack>
-              </Card>
-              <Card>
-                <BlockStack gap="200">
                   <InlineGrid columns="1fr auto">
                     <Text as="h2" variant="headingSm">
                       Queue memberships
@@ -87,7 +71,7 @@ export default function () {
                   </InlineGrid>
                   <AutoTable
                     model={api.queueMembership}
-                    columns={["position", "status", "updatedAt"]}
+                    columns={["updatedAt", "createdAt"]}
                     onClick={(row, rowRecord) => navigate(`/queue-memberships/update/${rowRecord.id}`)}
                     filter={[{ queueId: { equals: queue.id } }]}
                   />

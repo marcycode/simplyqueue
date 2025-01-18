@@ -1,82 +1,108 @@
-import { BlockStack, Card, InlineStack, Layout, Page, Text } from "@shopify/polaris";
-import { useLoaderData, useNavigate } from "@remix-run/react";
-import { AutoForm, AutoHiddenInput, AutoInput, AutoSubmit, SubmitErrorBanner } from "@gadgetinc/react/auto/polaris";
-import { AutoSaveBar } from "../components/AutoSaveBar";
-import { toast } from "../components/ToastManager";
-import { LoaderFunctionArgs, json } from "@remix-run/node";
+import { Banner, BlockStack, Button, Card, Layout, Page, Spinner, Text } from "@shopify/polaris";
+import { useParams } from "@remix-run/react";
+import { useFindOne, useFindMany, useAction } from "@gadgetinc/react";
 import { api } from "../api";
+ 
 
-export const loader = async ({ context, params }: LoaderFunctionArgs) => {
-  const queue = await context.api.queue.findById(params["queueId"]!);
-  return json({ queue });
-};
-
-export default function () {
-  const navigate = useNavigate();
-
-  const { queue } = useLoaderData<typeof loader>();
-
-  return (
-    <Page
-      title={"Create Queue membership"}
-      backAction={{ content: "Back to parent", url: `/queues/update/${queue.id}` }}
-    >
-      <AutoForm
-        title={false}
-        action={api.queueMembership.create}
-        onSuccess={(resultRecord) => {
-          toast({ content: "Created Queue membership" });
-          navigate(`/queue-memberships/update/${resultRecord.id}`);
-        }}
-      >
+export default function() {
+  const params = useParams();
+  const queueId = params.queueId!;
+  
+  // Fetch queue details
+  const [{ data: queue, fetching: fetchingQueue, error: queueError }] = useFindOne(api.queue, queueId);
+  
+  // Fetch oldest queue membership
+  const [{ data: memberships, fetching: fetchingMemberships, error: membershipsError }] = useFindMany(
+    api.queueMembership,
+    {
+      filter: { queueId: { equals: queueId } },
+      sort: { createdAt: "Ascending" },
+      first: 1,
+      select: {
+        id: true,
+        createdAt: true,
+        user: {
+          firstName: true,
+          lastName: true,
+          email: true
+        }
+      }
+    }
+  );
+  
+  // Set up delete action for admitting
+  const [{ fetching: admitting }, admit] = useAction(api.queueMembership.delete);
+  
+  // Handle loading states
+  if (fetchingQueue || fetchingMemberships) {
+    return (
+      <Page title="Queue Details">
         <Layout>
-          <Layout.Section variant="fullWidth">
-            <AutoSaveBar />
-            <SubmitErrorBanner />
-          </Layout.Section>
-          <Layout.Section variant="oneThird">
+          <Layout.Section>
             <Card>
-              <BlockStack gap="200">
-                <Text as="h2" variant="headingSm">
-                  Queue
-                </Text>
-                <Text as="span">{queue["name"]}</Text>
-                <AutoHiddenInput field="queue" value={queue.id} />
+              <BlockStack gap="400">
+                <Spinner accessibilityLabel="Loading" size="large" />
+                <Text as="p" alignment="center">Loading queue details...</Text>
               </BlockStack>
             </Card>
           </Layout.Section>
+        </Layout>
+      </Page>
+    );
+  }
+  
+  // Handle errors
+  if (queueError || membershipsError) {
+    return (
+      <Page title="Queue Details">
+        <Layout>
           <Layout.Section>
-            <BlockStack gap="500">
-              <Card>
-                <BlockStack gap="200">
-                  <BlockStack gap="200">
-                    <Text as="h2" variant="headingSm">
-                      Queue Membership Details
-                    </Text>
-                    <InlineStack gap="400">
-                      <AutoInput field="position" />
-                      <AutoInput field="status" />
-                    </InlineStack>
-                  </BlockStack>
-                </BlockStack>
-              </Card>
-              <Card>
-                <BlockStack gap="200">
-                  <Text as="h2" variant="headingSm">
-                    User
-                  </Text>
-                  <AutoInput field="user" />
-                </BlockStack>
-              </Card>
-            </BlockStack>
-          </Layout.Section>
-          <Layout.Section>
-            <InlineStack gap="300" align="end">
-              <AutoSubmit variant="primary" />
-            </InlineStack>
+            <Banner status="critical">
+              {queueError?.message || membershipsError?.message || "An error occurred loading the queue"}
+            </Banner>
           </Layout.Section>
         </Layout>
-      </AutoForm>
+      </Page>
+    );
+  }
+  
+  const oldestMember = memberships?.[0];
+ 
+
+  return (
+    <Page
+      title={`Manage Queue: ${queue?.name}`}
+      backAction={{ content: "Back to Queues", url: "/queues" }}
+    >
+      <Layout>
+        <Layout.Section>
+          <Card>
+            <BlockStack gap="400">
+              <Text as="h2" variant="headingMd">Next in Queue</Text>
+              
+              {!oldestMember && (
+                <Text as="p" color="subdued">No one is currently in the queue</Text>
+              )}
+              
+              {oldestMember && (
+                <BlockStack gap="200">
+                  <Text as="p">
+                    {oldestMember.user?.firstName} {oldestMember.user?.lastName}
+                  </Text>
+                  <Text as="p" color="subdued">{oldestMember.user?.email}</Text>
+                  <Button 
+                    onClick={() => void admit({ id: oldestMember.id })}
+                    loading={admitting}
+                    variant="primary"
+                  >
+                    Admit Member
+                  </Button>
+                </BlockStack>
+              )}
+            </BlockStack>
+          </Card>
+        </Layout.Section>
+      </Layout>
     </Page>
   );
 }

@@ -6,7 +6,7 @@ export const settings: GadgetSettings = {
   plugins: {
     authentications: {
       settings: {
-        redirectOnSignIn: "/readme",
+        redirectOnSignIn: "/queues",
         signInPath: "/sign-in",
         unauthorizedUserRedirect: "signInPath",
         defaultSignedInRoles: ["signed-in"],
