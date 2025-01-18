@@ -18,7 +18,7 @@ def get_queue(queue_id: int):
 # Get the position of a user in a queue
 @app.get("/{queue_id}/pos/{user_id}")
 def get_pos(queue_id: int, user_id: int):
-    return {"message": f"User {user_id} is at position {queues[queue_id].index(user_id) + 1} in the queue"}
+    return {"postion": queues[queue_id].index(user_id) + 1}
 
 # Add a user to a queue
 @app.put("/{queue_id}/add/{user_id}")
