@@ -45,8 +45,9 @@ export default function() {
 
   // Set up delete action for admitting
   const [{ fetching: admitting }, admit] = useAction(
-    api.queueMembership.delete
+    api.queueMembership.admit
   );
+  
 
   // Solace stuff should probably go in its own thing... TODO
   const factoryProps = new solace.SolclientFactoryProperties();
