@@ -12,7 +12,7 @@ export function useSolaceSession() {
 
     // Create session
     const session = solace.SolclientFactory.createSession({
-      url: process.env.SOLACE_URL,
+      url: import.meatVITE_SOLACE_URL,
       vpnName: process.env.SOLACE_VPN,
       userName: process.env.SOLACE_USER_NAME,
       password: process.env.SOLACE_PASSWORD,
