@@ -1,9 +1,9 @@
-import { BlockStack, Card, Layout, Page } from "@shopify/polaris";
+import { BlockStack, Button, Card, Layout, Page } from "@shopify/polaris";
 import { useNavigate } from "@remix-run/react";
 import { AutoTable } from "@gadgetinc/react/auto/polaris";
 import { api } from "../api";
 
-export default function () {
+export default function() {
   const navigate = useNavigate();
 
   return (
@@ -24,7 +24,33 @@ export default function () {
               <AutoTable
                 model={api.queue}
                 initialSort={{ createdAt: "Descending" }}
-                columns={["name", "status", "description", "updatedAt"]}
+                columns={[
+                  "name",
+                  "status",
+                  "description",
+                  "updatedAt",
+                  {
+                    header: "",
+                    render: ({ record }) => (
+                      <Button 
+                        variant="plain" 
+                        onClick={() => navigate(`/queues/${record.id}/queue-memberships/new`)}>
+                        Add Users
+                      </Button>
+                    ),
+                  },
+                  {
+                    header: "",
+                    render: ({ record }) => (
+                      <Button 
+                        variant="primary" 
+                        disabled={record.status === "closed"} 
+                        onClick={() => { }}>
+                        Admit Users
+                      </Button>
+                    ),
+                  },
+                ]}
                 onClick={(row, rowRecord) => navigate(`/queues/update/${rowRecord.id}`)}
               />
             </BlockStack>

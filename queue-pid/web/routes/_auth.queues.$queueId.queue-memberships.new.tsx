@@ -11,7 +11,7 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
   return json({ queue });
 };
 
-export default function () {
+export default function() {
   const navigate = useNavigate();
 
   const { queue } = useLoaderData<typeof loader>();
@@ -53,10 +53,6 @@ export default function () {
                     <Text as="h2" variant="headingSm">
                       Queue Membership Details
                     </Text>
-                    <InlineStack gap="400">
-                      <AutoInput field="position" />
-                      <AutoInput field="status" />
-                    </InlineStack>
                   </BlockStack>
                 </BlockStack>
               </Card>

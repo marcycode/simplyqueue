@@ -40,14 +40,6 @@ export const permissions: GadgetPermissions = {
             update: true,
           },
         },
-        queueHistory: {
-          read: true,
-          actions: {
-            create: true,
-            delete: true,
-            update: true,
-          },
-        },
         queueMembership: {
           read: true,
           actions: {

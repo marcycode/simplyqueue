@@ -2,7 +2,6 @@ import { BlockStack, Button, Card, InlineGrid, InlineStack, Layout, Page, Text }
 import { useLoaderData, useNavigate } from "@remix-run/react";
 import {
   AutoForm,
-  AutoHasManyForm,
   AutoInput,
   AutoStringInput,
   AutoSubmit,
@@ -60,21 +59,6 @@ export default function() {
                     </Text>
                     <AutoStringInput field="description" multiline={4} />
                   </BlockStack>
-                </BlockStack>
-              </Card>
-              <Card>
-                <BlockStack gap="200">
-                  <Text as="h2" variant="headingSm">
-                    Queue histories
-                  </Text>
-                  <AutoHasManyForm field="queueHistories" selectPaths={["event"]} primaryLabel={["event"]}>
-                    <BlockStack gap="200">
-                      <Text as="h2" variant="headingSm">
-                        Queue History Details
-                      </Text>
-                      <AutoInput field="event" />
-                    </BlockStack>
-                  </AutoHasManyForm>
                 </BlockStack>
               </Card>
               <Card>
