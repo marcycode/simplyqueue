@@ -1,8 +1,10 @@
 import { BlockStack, Button, Card, Layout, Page } from "@shopify/polaris";
+import { BlockStack, Button, Card, Layout, Page } from "@shopify/polaris";
 import { useNavigate } from "@remix-run/react";
 import { AutoTable } from "@gadgetinc/react/auto/polaris";
 import { api } from "../api";
 
+export default function() {
 export default function() {
   const navigate = useNavigate();
 
@@ -70,3 +72,4 @@ export default function() {
     </Page>
   );
 }
+
