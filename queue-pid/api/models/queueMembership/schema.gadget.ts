@@ -9,15 +9,25 @@ export const schema: GadgetModel = {
   comment:
     "Represents a user's association and status in a specific queue.",
   fields: {
+    email: {
+      type: "email",
+      validations: { required: true },
+      storageKey: "LG7R-U6Kv-nD",
+    },
+    firstName: {
+      type: "string",
+      validations: { required: true },
+      storageKey: "CnhPaXIGlpGQ",
+    },
+    lastName: {
+      type: "string",
+      validations: { required: true },
+      storageKey: "52VEJL9vDT4j",
+    },
     queue: {
       type: "belongsTo",
       parent: { model: "queue" },
       storageKey: "qo_73GvY_Y9G-queue",
-    },
-    user: {
-      type: "belongsTo",
-      parent: { model: "user" },
-      storageKey: "qo_73GvY_Y9G-user",
     },
   },
 };

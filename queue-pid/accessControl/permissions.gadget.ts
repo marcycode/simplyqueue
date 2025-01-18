@@ -71,8 +71,10 @@ export const permissions: GadgetPermissions = {
           },
         },
         queueMembership: {
+          read: true,
           actions: {
             create: true,
+            delete: true,
           },
         },
         user: {
