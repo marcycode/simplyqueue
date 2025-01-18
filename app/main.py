@@ -15,6 +15,11 @@ def admit_user(queue_id: int):
 def get_queue(queue_id: int):
     return {"queue": queues[queue_id]}
 
+# Get the front of a queue
+@app.get("/{queue_id}/front")
+def get_front(queue_id: int):
+    return {"front": queues[queue_id][0]}
+
 # Get the position of a user in a queue
 @app.get("/{queue_id}/pos/{user_id}")
 def get_pos(queue_id: int, user_id: int):
