@@ -65,7 +65,10 @@ export const permissions: GadgetPermissions = {
       storageKey: "unauthenticated",
       models: {
         queue: {
-          read: true,
+          read: {
+            filter:
+              "accessControl/filters/queue/unauthenticated-read.gelly",
+          },
         },
         queueMembership: {
           actions: {

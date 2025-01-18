@@ -1,4 +1,11 @@
-import { BlockStack, Card, InlineStack, Layout, Page, Text } from "@shopify/polaris";
+import {
+  BlockStack,
+  Card,
+  InlineStack,
+  Layout,
+  Page,
+  Text,
+} from "@shopify/polaris";
 import { useNavigate } from "@remix-run/react";
 import {
   AutoForm,
@@ -16,7 +23,10 @@ export default function () {
   const navigate = useNavigate();
 
   return (
-    <Page title={"Create Queue"} backAction={{ content: "Back to index", url: `/queues` }}>
+    <Page
+      title={"Create Queue"}
+      backAction={{ content: "Back to index", url: `/queues` }}
+    >
       <AutoForm
         title={false}
         action={api.queue.create}
@@ -60,7 +70,11 @@ export default function () {
                   <Text as="h2" variant="headingSm">
                     Queue histories
                   </Text>
-                  <AutoHasManyForm field="queueHistories" selectPaths={["event"]} primaryLabel={["event"]}>
+                  <AutoHasManyForm
+                    field="queueHistories"
+                    selectPaths={["event"]}
+                    primaryLabel={["event"]}
+                  >
                     <BlockStack gap="200">
                       <Text as="h2" variant="headingSm">
                         Queue History Details
@@ -75,7 +89,11 @@ export default function () {
                   <Text as="h2" variant="headingSm">
                     Queue memberships
                   </Text>
-                  <AutoHasManyForm field="queueMemberships" selectPaths={["id"]} primaryLabel={["id"]}>
+                  <AutoHasManyForm
+                    field="queueMemberships"
+                    selectPaths={["id"]}
+                    primaryLabel={["id"]}
+                  >
                     <BlockStack gap="200">
                       <Text as="h2" variant="headingSm">
                         Queue Membership Details
