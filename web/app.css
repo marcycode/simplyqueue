@@ -1,0 +1,105 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+/* Customize scrollbar for WebKit browsers */
+::-webkit-scrollbar {
+  width: 10px;  /* width of the entire scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;  /* color of the tracking area */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);  /* color of the scroll thumb */
+  border-radius: 20px;  /* roundness of the scroll thumb */
+  border: 3px solid transparent;  /* creates padding around scroll thumb */
+}
+
+/* Hide scrollbar when not in use */
+::-webkit-scrollbar-thumb:vertical {
+  min-height: 30px;
+  background-clip: content-box;
+}
+
+/* Show scrollbar on hover */
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Hide scrollbar for Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+}
+
+.button-icon {
+  margin-right: 8px;
+  vertical-align: middle;
+  display: inline-flex;
+  align-items: center;
+}
+
+.logo {
+  color: rgb(48, 48, 48);
+  font-size: 24px;
+  font-weight: 800;
+  padding: 12px 16px;
+  line-height: 36px;
+}
+
+.app-logo {
+  display: block;
+  pointer-events: none;
+}
+
+.auth-page {
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(-32deg, #ffe2da, #ffd7e5, #c6edfd, #ceffec);
+  animation: gradient 25s ease infinite;
+  background-size: 400% 400%;
+}
+
+@keyframes gradient {
+  0% { background-position: 0% 50%}
+  50% { background-position: 100% 50%}
+  100% { background-position: 0% 50%}
+}
+
+.auth-container {
+  width: 420px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .app-logo {
+    animation: app-logo-spin infinite 20s linear;
+  }
+}
+
+@keyframes app-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+body, .Polaris-Frame__Main {
+  background-color: var(--p-color-bg);
+}
+
+.Polaris-Frame__Navigation, .Polaris-Navigation {
+  border-top-left-radius: var(--p-border-radius-300);
+}
+
+.Polaris-Frame__Content {
+  border-top-right-radius: var(--p-border-radius-300);
+  background-color: var(--p-color-bg);
+}
