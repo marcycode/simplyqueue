@@ -48,8 +48,9 @@ export default function() {
 
   // Set up delete action for admitting
   const [{ fetching: admitting }, admit] = useAction(
-    api.queueMembership.delete
+    api.queueMembership.admit
   );
+  
 
   const handleAdmit = (id: string) => {
     admit({ id: id });
