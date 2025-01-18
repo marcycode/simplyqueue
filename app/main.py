@@ -1,32 +1,33 @@
 from fastapi import FastAPI
+from collections import defaultdict
 
 app = FastAPI()
 
-queue = []
+queues = defaultdict(list)
 
-@app.get("/")
-def read_root():
-    return {"message": "Hello, World!"}
+# Admit a user from a queue
+@app.get("/{queue_id}/admit")
+def admit_user(queue_id: int):
+    return {"message": f"User {queues[queue_id].pop(0)} removed from queue"}
 
-@app.put("/add/{user_id}")
-def add_user(user_id: int):
-    queue.append(user_id)
+# Get the queue
+@app.get("/{queue_id}")
+def get_queue(queue_id: int):
+    return {"queue": queues[queue_id]}
+
+# Get the position of a user in a queue
+@app.get("/{queue_id}/pos/{user_id}")
+def get_pos(queue_id: int, user_id: int):
+    return {"message": f"User {user_id} is at position {queues[queue_id].index(user_id) + 1} in the queue"}
+
+# Add a user to a queue
+@app.put("/{queue_id}/add/{user_id}")
+def add_user(queue_id: int, user_id: int):
+    queues[queue_id].append(user_id)
     return {"message": f"User {user_id} added to queue"}
 
-@app.get("/admit")
-def admit_user():
-    return {"message": f"User {queue.pop(0)} removed from queue"}
-
-@app.get("/queue")
-def get_queue():
-    return {"queue": queue}
-
-@app.get("/pos/{user_id}")
-def get_pos(user_id: int):
-    return {"message": f"User {user_id} is at position {queue.index(user_id) + 1} in the queue"}
-
-@app.delete("/remove/{user_id}")
-def remove_user(user_id: int):
-    queue.remove(user_id)
+# Remove a user from a queue
+@app.delete("/{queue_id}/remove/{user_id}")
+def remove_user(queue_id: int, user_id: int):
+    queues[queue_id].remove(user_id)
     return {"message": f"User {user_id} removed from queue"}
-
