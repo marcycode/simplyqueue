@@ -45,7 +45,7 @@ export default function() {
                       <Button 
                         variant="primary" 
                         disabled={record.status === "closed"} 
-                        onClick={() => { }}>
+                        onClick={() => navigate(`/queues/${record.id}/admit`)}>
                         Admit Users
                       </Button>
                     ),
