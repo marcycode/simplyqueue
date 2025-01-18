@@ -41,59 +41,46 @@ export default function JoinQueueRoute() {
   const navigate = useNavigate();
   const [recievedMsg, setRecievedMsg] = useState(false);
 
-  useEffect(() => {
-    // Solace stuff should probably go in its own thing... TODO
-    var factoryProps = new solace.SolclientFactoryProperties();
-    factoryProps.profile = solace.SolclientFactoryProfiles.version10;
-    solace.SolclientFactory.init(factoryProps);
-    var session = solace.SolclientFactory.createSession({
-      url: process.env.SOLACE_URL,
-      vpnName: process.env.SOLACE_VPN,
-      userName: process.env.SOLACE_USER_NAME,
-      // ENV VAR 😬
-      password: process.env.SOLACE_PASSWORD,
-    });
-    try {
-      console.log("Test");
-      session.connect();
+  // useEffect(() => {
+  //   // Solace stuff should probably go in its own thing... TODO
+  //   var factoryProps = new solace.SolclientFactoryProperties();
+  //   factoryProps.profile = solace.SolclientFactoryProfiles.version10;
+  //   solace.SolclientFactory.init(factoryProps);
+  //   var session = solace.SolclientFactory.createSession({
+  //     url: process.env.SOLACE_URL,
+  //     vpnName: process.env.SOLACE_VPN,
+  //     userName: process.env.SOLACE_USER_NAME,
+  //     // ENV VAR 😬
+  //     password: process.env.SOLACE_PASSWORD,
+  //   });
+  //   try {
+  //     console.log("Test");
+  //     session.connect();
 
-      session.on(solace.SessionEventCode.SUBSCRIPTION_ERROR, (sessionEvent) =>
-        console.error(`Cannot subscribe to topic: ${sessionEvent}`)
-      );
-      session.on(solace.SessionEventCode.SUBSCRIPTION_OK, () => {
-        console.log("Subscription OK!!");
-      });
-      session.on(solace.SessionEventCode.UP_NOTICE, () => {
-        console.log("=== Successfully connected and ready to subscribe. ===");
-        subscribe();
-      });
-      session.on(solace.SessionEventCode.MESSAGE, (message) => {
-        console.log(
-          "message binary attachment: ",
-          message.getBinaryAttachment()
-        );
-        console.log("message dump: ", message.dump());
-        setRecievedMsg(true);
-      });
+  //     session.on(solace.SessionEventCode.SUBSCRIPTION_ERROR, (sessionEvent) =>
+  //       console.error(`Cannot subscribe to topic: ${sessionEvent}`)
+  //     );
+  //     session.on(solace.SessionEventCode.SUBSCRIPTION_OK, () => {
+  //       console.log("Subscription OK!!");
+  //     });
+  //     session.on(solace.SessionEventCode.UP_NOTICE, () => {
+  //       console.log("=== Successfully connected and ready to subscribe. ===");
+  //       subscribe();
+  //     });
+  //     session.on(solace.SessionEventCode.MESSAGE, (message) => {
+  //       console.log(
+  //         "message binary attachment: ",
+  //         message.getBinaryAttachment()
+  //       );
+  //       console.log("message dump: ", message.dump());
+  //       setRecievedMsg(true);
+  //     });
 
-      const subscribe = () => {
-        try {
-          session.subscribe(
-            solace.SolclientFactory.createTopicDestination("ready/" + membershipId),
-            true,
-            "ready",
-            10000
-          );
-        } catch (error) {
-          console.error("!!!! error in subscribe function !!!!");
-          console.error(error);
-        }
-      };
-    } catch (error) {
-      console.error("!!! Solace error !!!");
-      console.error(error);
-    }
-  }, []);
+  //   } catch (error) {
+  //     console.error("!!! Solace error !!!");
+  //     console.error(error);
+  //   }
+  // }, []);
 
   return (
     <Page>

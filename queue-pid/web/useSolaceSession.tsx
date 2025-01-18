@@ -13,9 +13,9 @@ export function useSolaceSession() {
     // Create session
     const session = solace.SolclientFactory.createSession({
       url: import.meta.env.VITE_SOLACE_URL,
-      vpnName: process.env.SOLACE_VPN,
-      userName: process.env.SOLACE_USER_NAME,
-      password: process.env.SOLACE_PASSWORD,
+      vpnName: import.meta.env.SOLACE_VPN,
+      userName: import.meta.env.SOLACE_USER_NAME,
+      password: import.meta.env.SOLACE_PASSWORD,
     });
 
     // Store session in ref
@@ -72,6 +72,20 @@ export function useSolaceSession() {
       console.error(error);
     }
   }, []);
+
+  const subscribe = (memberId: string) => {
+    try {
+      sessionRef.subscribe(
+        solace.SolclientFactory.createTopicDestination("ready/" + memberId),
+        true,
+        "ready",
+        10000
+      );
+    } catch (error) {
+      console.error("!!!! error in subscribe function !!!!");
+      console.error(error);
+    }
+  };
 
   return { publish };
 }
