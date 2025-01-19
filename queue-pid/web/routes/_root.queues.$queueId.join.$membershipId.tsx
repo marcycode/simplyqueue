@@ -11,7 +11,10 @@ import {
 } from "@shopify/polaris";
 import solace from "solclientjs";
 import { useEffect, useState } from "react";
-import { FaClock } from "react-icons/fa"; // Import clock icon
+import { FaAndroid } from "react-icons/fa";
+
+// Import bell sound
+import bellSound from "../assets/notisound.mp3"; // Ensure the path is correct
 
 export async function loader({ params, context }: LoaderFunctionArgs) {
   const { queueId, membershipId } = params;
@@ -26,14 +29,26 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
       }),
     ]);
 
-    return json({ queue, membership, membershipId });
+    const response = await fetch(`https://simplyqueue-production.up.railway.app/${queueId}/pos/${membershipId}`, {
+      method: "GET",
+    });
+
+    // Check if the response was successful
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    // Parse the JSON data
+    const data = await response.json();
+
+    return json({ queue, membership, membershipId, data });
   } catch (error) {
     throw new Response("Queue or membership not found", { status: 404 });
   }
 }
 
 export default function JoinQueueRoute() {
-  const { queue, membership, membershipId } = useLoaderData<typeof loader>();
+  const { queue, membership, membershipId, data } = useLoaderData<typeof loader>();
   const navigate = useNavigate();
   const [recievedMsg, setRecievedMsg] = useState(false);
 
@@ -91,13 +106,18 @@ export default function JoinQueueRoute() {
     }
   }, []);
 
+  useEffect(() => {
+    if (recievedMsg) {
+      const audio = new Audio(bellSound);
+      audio.play().catch((error) =>
+        console.error("Failed to play bell sound:", error)
+      );
+    }
+  }, [recievedMsg]);
+
   return (
     <Page>
       <BlockStack gap="400">
-        {/* Clock Icon */}
-        <div style={{ display: "flex", justifyContent: "center", marginBottom: "20px" }}>
-          <FaClock style={{ fontSize: "50px", color: "#5C5F62" }} />
-        </div>
 
         <Card>
           <Box padding="400">
@@ -122,7 +142,9 @@ export default function JoinQueueRoute() {
                     </Text>
                   </>
                 ) : (
-                  ""
+                    <Text variant="bodyMd" as="p">
+                      You are in position {data.postion}
+                    </Text>
                 )}
               </BlockStack>
               <div style={{ position: "absolute", bottom: "0", right: "0" }}>
