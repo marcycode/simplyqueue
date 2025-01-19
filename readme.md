@@ -1,4 +1,4 @@
-# SimplyQueue
+# SimplyQ
 A better way to wait in line
 ## Inspiration
 Waiting in line sucks. Every hackathon I've been to, I've seen people waiting in line for hours. That's wasted time that could've been spent improving their product and in a hackathon where time is limited, every second counts.
