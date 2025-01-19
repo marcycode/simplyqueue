@@ -1,4 +1,4 @@
-# Qpid
+# SimplyQueue
 A better way to wait in line
 ## Inspiration
 Waiting in line sucks. Every hackathon I've been to, I've seen people waiting in line for hours. That's wasted time that could've been spent improving their product and in a hackathon where time is limited, every second counts.
@@ -25,7 +25,7 @@ We learned plenty of new things. We learnt how to use Gadget and Solace PubSub+.
 - Queue position tracking
 ## Architecture
 
-![architecture diagram](architecture.png)
+![architecture diagram](architecture.jpg)
 
 Gadget is our backend and frontend. We use Solace PubSub+ to notify users when it's their turn to be called. We use Railway to host our python queueing application.
 
