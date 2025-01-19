@@ -17,7 +17,6 @@ import { useEffect } from "react";
 import Webcam from "react-webcam";
 import { l } from "vite/dist/node/types.d-aGj9QkWt";
 
-
 export default function() {
   const params = useParams();
   const queueId = params.queueId!;
@@ -42,26 +41,23 @@ export default function() {
 
   const oldestMember = memberships?.[0];
 
-  console.log("oldestMember", oldestMember);
-
   // Set up delete action for admitting
   const [{ fetching: admitting }, admit] = useAction(
     api.queueMembership.admit
   );
 
   // Solace stuff should probably go in its own thing... TODO
-  var factoryProps = new solace.SolclientFactoryProperties();
+  const factoryProps = new solace.SolclientFactoryProperties();
   factoryProps.profile = solace.SolclientFactoryProfiles.version10;
   solace.SolclientFactory.init(factoryProps);
-  var session = solace.SolclientFactory.createSession({
-    url: "wss://mr-connection-3j8278prrj0.messaging.solace.cloud:443",
-    vpnName: "queue-pid-broker",
-    userName: "solace-cloud-client",
+  const session = solace.SolclientFactory.createSession({
+    url: import.meta.env.VITE_SOLACE_URL,
+    vpnName: import.meta.env.VITE_SOLACE_VPN,
+    userName: import.meta.env.VITE_SOLACE_USER_NAME,
     // ENV VAR 😬
-    password: "k6nf8vl7msf3b5uha6uoi01sfq",
+    password: import.meta.env.VITE_SOLACE_PASSWORD,
   });
   try {
-    console.log("Test");
     session.connect();
 
     session.on(solace.SessionEventCode.SUBSCRIPTION_ERROR, (sessionEvent) =>
@@ -83,7 +79,7 @@ export default function() {
     const msgText = "Test";
     const msg = solace.SolclientFactory.createMessage();
     msg.setDestination(
-      solace.SolclientFactory.createTopicDestination("exampletopic")
+      solace.SolclientFactory.createTopicDestination(`ready/${oldestMember?.id}`)
     );
     msg.setBinaryAttachment(msgText);
     msg.setDeliveryMode(solace.MessageDeliveryModeType.DIRECT);

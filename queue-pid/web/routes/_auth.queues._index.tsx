@@ -2,9 +2,9 @@ import { BlockStack, Button, Card, Layout, Page } from "@shopify/polaris";
 import { useNavigate } from "@remix-run/react";
 import { AutoTable } from "@gadgetinc/react/auto/polaris";
 import { api } from "../api";
-import gizmoImage from "../../assets/gizmo.png";
+import gizmoImage from "../assets/gizmo.png";
 
-export default function() {
+export default function QueueIndex() {
   const navigate = useNavigate();
 
   return (
@@ -46,7 +46,7 @@ export default function() {
                       <Button
                         variant="primary"
                         disabled={record.status === "closed"}
-                        onClick={() => navigate(`/queues/${record.id}/queue-memberships/new` /* CHANGE URL TO ADMIT PAGE */)}>
+                        onClick={() => navigate(`/queues/${record.id}/queue-memberships/new`)}>
                         Admit Users
                       </Button>
                     ),
@@ -60,13 +60,16 @@ export default function() {
                         Edit Queue
                       </Button>
                     ),
-                  },
+                  }
                 ]}
-
               />
-             
             </BlockStack>
           </Card>
+        </Layout.Section>
+        <Layout.Section>
+          <div className="center-image">
+            <img src={gizmoImage} alt="Gizmo mascot" className="animated-image" />
+          </div>
         </Layout.Section>
       </Layout>
     </Page>

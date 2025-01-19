@@ -119,4 +119,26 @@ body, .Polaris-Frame__Main {
   pointer-events: none; /* Ensure it doesn’t block interactions */
 }
 
+.center-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 500px; /* Adjust as needed */
+  overflow: hidden;
+}
+
+.animated-image {
+  max-width: 250px;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px); /* Adjust the height of the bounce */
+  }
+}
+
 

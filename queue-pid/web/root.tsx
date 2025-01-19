@@ -15,16 +15,18 @@ import { GadgetConfig } from "gadget-server";
 import { Suspense } from "react";
 import { api } from "./api";
 import appStylesHref from "./app.css?url";
+import faviconHref from "./assets/simplyQlogomini.png?url";
 
 export const links = () => [
   { rel: "stylesheet", href: appStylesHref },
   { rel: "stylesheet", href: "https://assets.gadget.dev/assets/reset.min.css" },
+  { rel: "icon", type: "image/png", href: faviconHref },
 ];
 
 export const meta = () => [
   { charset: "utf-8" },
   { name: "viewport", content: "width=device-width, initial-scale=1" },
-  { title: "Gadget Remix app" },
+  { title: "SimplyQ" },
 ];
 
 export type RootOutletContext = {
