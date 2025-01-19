@@ -14,7 +14,7 @@ We found it difficult learning how to use Gadget and Solace PubSub+. Gadget was 
 We are proud of having learnt how to use Gadget and Solace PubSub+. We are quite happy with the end product we created and believe it has a lot of potential.
 ## What we learned
 We learned plenty of new things. We learnt how to use Gadget and Solace PubSub+. We also learnt how to use Railway to host our application and how to deploy a facial recognition model on a website.
-## What's next for Qpid
+## What's next for SimplyQ
 - Upgrading our infrastructure
 - Improving our UI
 - Adding new features
