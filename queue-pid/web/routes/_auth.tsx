@@ -12,6 +12,7 @@ import { Frame, Navigation, TopBar } from "@shopify/polaris";
 import { useSignOut } from "@gadgetinc/react";
 import { ToastManager } from "../components/ToastManager";
 import type { RootOutletContext } from "../root";
+import gizmoimage from "../images/gizmo.png";
 
 export const loader = async ({ context }: LoaderFunctionArgs) => {
   const { session, gadgetConfig } = context;
@@ -42,7 +43,7 @@ const UserMenu = () => {
       actions={[
         {
           items: [
-            { content: "Profile", url: "/profile", icon: ProfileIcon },
+            { content: "Profile", url: "/profile", icon: gizmoimage },
             { content: "Team", url: "/team", icon: TeamIcon },
             { content: "Invite", url: "/invite", icon: EmailIcon },
             { content: "Sign out", icon: ExitIcon, onAction: signOut },

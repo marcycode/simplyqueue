@@ -16,14 +16,12 @@ import solace from "solclientjs";
 import { useEffect } from "react";
 import Webcam from "react-webcam";
 import { l } from "vite/dist/node/types.d-aGj9QkWt";
-import { useSolaceSession } from "../useSolaceSession";
 
 
 export default function() {
   const params = useParams();
   const queueId = params.queueId!;
   const [authImage, setAuthImage] = useState("");
-  const { publish } = useSolaceSession();
 
   // Fetch queue details
   const [{ data: queue, fetching: fetchingQueue, error: queueError }] =
@@ -50,11 +48,59 @@ export default function() {
   const [{ fetching: admitting }, admit] = useAction(
     api.queueMembership.admit
   );
-  
+
+  // Solace stuff should probably go in its own thing... TODO
+  var factoryProps = new solace.SolclientFactoryProperties();
+  factoryProps.profile = solace.SolclientFactoryProfiles.version10;
+  solace.SolclientFactory.init(factoryProps);
+  var session = solace.SolclientFactory.createSession({
+    url: "wss://mr-connection-3j8278prrj0.messaging.solace.cloud:443",
+    vpnName: "queue-pid-broker",
+    userName: "solace-cloud-client",
+    // ENV VAR 😬
+    password: "k6nf8vl7msf3b5uha6uoi01sfq",
+  });
+  try {
+    console.log("Test");
+    session.connect();
+
+    session.on(solace.SessionEventCode.SUBSCRIPTION_ERROR, (sessionEvent) =>
+      console.error(`Cannot subscribe to topic: ${sessionEvent}`)
+    );
+    session.on(solace.SessionEventCode.SUBSCRIPTION_OK, () => {
+      console.log("Subscription OK!!");
+    });
+    session.on(solace.SessionEventCode.UP_NOTICE, () => {
+      console.log("=== Successfully connected and ready to publish. ===");
+    });
+  } catch (error) {
+    console.error("!!! Solace error !!!");
+    console.error(error);
+  }
+
+  const publish = () => {
+    // If we need to include metadata, it goes here:
+    const msgText = "Test";
+    const msg = solace.SolclientFactory.createMessage();
+    msg.setDestination(
+      solace.SolclientFactory.createTopicDestination("exampletopic")
+    );
+    msg.setBinaryAttachment(msgText);
+    msg.setDeliveryMode(solace.MessageDeliveryModeType.DIRECT);
+    if (session) {
+      try {
+        session.send(msg);
+        console.log("Message published!!!");
+      } catch (error) {
+        console.error("!!! Message failed to publish !!!");
+        console.error(error);
+      }
+    } else console.log("Session does not exist — cannot publish message.");
+  };
 
   const handleAdmit = (id: string) => {
     admit({ id: id });
-    if (oldestMember) publish(oldestMember.id);
+    publish();
   };
 
   const WebcamCapture = () => {

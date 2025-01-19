@@ -12,8 +12,8 @@ import {
 } from "@shopify/polaris";
 import { AutoForm, SubmitResultBanner } from "@gadgetinc/react/auto/polaris";
 import { api } from "../api";
-import solace from "solclientjs";
 import { useEffect, useState } from "react";
+import solace from "solclientjs";
 
 export async function loader({ params, context }: LoaderFunctionArgs) {
   const { queueId, membershipId } = params;
@@ -29,58 +29,85 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
       }),
     ]);
 
+    let position = null;
+    try {
+      const response = await fetch(
+        `https://simplyqueue-production.up.railway.app/${queueId}/pos/${membershipId}`,
+        {
+          method: "GET",
+        }
+      );
 
-    return json({ queue, membership, membershipId });
+      if (!response.ok) {
+        throw new Error(`Failed to fetch position: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      position = data.postion;
+    } catch (error) {
+      console.error("Error fetching position:", error);
+    }
+
+    return json({ queue, membership, membershipId, position });
   } catch (error) {
     throw new Response('Queue or membership not found', { status: 404 });
   }
 }
 
 export default function JoinQueueRoute() {
-  const { queue, membership, membershipId } = useLoaderData<typeof loader>();
+  const { queue, membership, membershipId, position } = useLoaderData<typeof loader>();
+
   const navigate = useNavigate();
   const [recievedMsg, setRecievedMsg] = useState(false);
 
-  // useEffect(() => {
-  //   // Solace stuff should probably go in its own thing... TODO
-  //   var factoryProps = new solace.SolclientFactoryProperties();
-  //   factoryProps.profile = solace.SolclientFactoryProfiles.version10;
-  //   solace.SolclientFactory.init(factoryProps);
-  //   var session = solace.SolclientFactory.createSession({
-  //     url: process.env.SOLACE_URL,
-  //     vpnName: process.env.SOLACE_VPN,
-  //     userName: process.env.SOLACE_USER_NAME,
-  //     // ENV VAR 😬
-  //     password: process.env.SOLACE_PASSWORD,
-  //   });
-  //   try {
-  //     console.log("Test");
-  //     session.connect();
+  useEffect(() => {
+    // Solace stuff should probably go in its own thing... TODO
+    var factoryProps = new solace.SolclientFactoryProperties();
+    factoryProps.profile = solace.SolclientFactoryProfiles.version10;
+    solace.SolclientFactory.init(factoryProps);
+    var session = solace.SolclientFactory.createSession({
+      url: "wss://mr-connection-3j8278prrj0.messaging.solace.cloud:443",
+      vpnName: "queue-pid-broker",
+      userName: "solace-cloud-client",
+      // ENV VAR 😬
+      password: "k6nf8vl7msf3b5uha6uoi01sfq",
+    });
+    try {
+      if (!sessionRef.current) {
+      console.log("Session does not exist — cannot publish message.");
+      return;
+    }
 
-  //     session.on(solace.SessionEventCode.SUBSCRIPTION_ERROR, (sessionEvent) =>
-  //       console.error(`Cannot subscribe to topic: ${sessionEvent}`)
-  //     );
-  //     session.on(solace.SessionEventCode.SUBSCRIPTION_OK, () => {
-  //       console.log("Subscription OK!!");
-  //     });
-  //     session.on(solace.SessionEventCode.UP_NOTICE, () => {
-  //       console.log("=== Successfully connected and ready to subscribe. ===");
-  //       subscribe();
-  //     });
-  //     session.on(solace.SessionEventCode.MESSAGE, (message) => {
-  //       console.log(
-  //         "message binary attachment: ",
-  //         message.getBinaryAttachment()
-  //       );
-  //       console.log("message dump: ", message.dump());
-  //       setRecievedMsg(true);
-  //     });
+    const msg = solace.SolclientFactory.createMessage();
+    msg.setDestination(
+      solace.SolclientFactory.createTopicDestination(`ready/${membershipId}`)
+    );
+    msg.setBinaryAttachment("");
+    msg.setDeliveryMode(solace.MessageDeliveryModeType.DIRECT);
 
-  //   } catch (error) {
-  //     console.error("!!! Solace error !!!");
-  //     console.error(error);
-  //   }
-  // }, []);
+    try {
+      sessionRef.current.send(msg);
+      console.log("Message published!!!");
+    } catch (error) {
+      console.error("!!! Message failed to publish !!!");
+      console.error(error);
+    }
+  }, []);
+
+  const subscribe = (memberId: string) => {
+    try {
+      sessionRef.subscribe(
+        solace.SolclientFactory.createTopicDestination("ready/" + memberId),
+        true,
+        "ready",
+        10000
+      );
+    } catch (error) {
+      console.error("!!!! error in subscribe function !!!!");
+      console.error(error);
+    }
+  };
+  }, []);
 
   return (
     <Page>
@@ -98,7 +125,7 @@ export default function JoinQueueRoute() {
                   </Text>
                 )}
                 <Text variant="bodyMd" as="p">
-                  You've successfully joined "{queue.name}"
+                  You've successfully joined "{queue.name}". {position ? `You are in position ${position}.` : "Your position is being calculated..."}
                 </Text>
                 {recievedMsg ? (
                   <>
