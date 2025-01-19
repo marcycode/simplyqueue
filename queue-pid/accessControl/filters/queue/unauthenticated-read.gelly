@@ -1,4 +1,0 @@
-filter ($session: Session, $user: User) on Queue [
-  where status == "open"
-]
-# structured filters: [{"type":"field_values_filter","field":"status","values":["open"]}]
